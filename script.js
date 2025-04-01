@@ -136,7 +136,7 @@ async function saveHistoryToFile() {
 }
 
 // Fonction pour valider la répartition actuelle
-function validateCurrentAssignment() {
+async function validateCurrentAssignment() {
     const taskList = document.getElementById("taskList");
     const selects = taskList.querySelectorAll("select");
     let validatedAssignment = {};
@@ -146,6 +146,9 @@ function validateCurrentAssignment() {
         const selectedParticipant = select.value;
         validatedAssignment[task] = selectedParticipant;
     });
+
+    // Vérifie les tâches non effectuées
+    checkUnfinishedTasks(validatedAssignment);
 
     // Ajoutez la répartition validée à l'historique
     history.push({
@@ -157,7 +160,16 @@ function validateCurrentAssignment() {
     console.log("Historique mis à jour :", history);
 
     // Sauvegardez l'historique dans un fichier
-    saveHistoryToFile();
+    await saveHistoryToFile();
+}
+
+// Vérifie si toutes les tâches ont été effectuées
+function checkUnfinishedTasks(assignments) {
+    const unfinishedTasks = Object.entries(assignments).filter(([task, participant]) => participant === "Maman" || participant === "Papa");
+    if (unfinishedTasks.length > 0) {
+        alert("Attention : Certaines tâches n'ont pas été effectuées !");
+        console.warn("Tâches non effectuées :", unfinishedTasks);
+    }
 }
 
 // Initialisation de la page
