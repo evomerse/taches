@@ -1,71 +1,53 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Répartition des tâches — Famille</title>
-<link rel="stylesheet" href="/styles.css" />
-</head>
-<body>
-<header class="topbar">
-<div class="wrap row">
-<h1>Répartition des tâches — Nathan • Anna • Aaron</h1>
-<div class="spacer"></div>
-<div class="toolbar">
-<label for="start">Début du cycle</label>
-<input type="date" id="start" />
-<button class="ghost tiny" id="todayBtn">Aujourd'hui</button>
-<button class="ghost tiny" id="prevBtn">⟵ Jour précédent</button>
-<button class="ghost tiny" id="nextBtn">Jour suivant ⟶</button>
+<div class="row gap8">
+<button class="btn btn-ghost btn-sm" id="exportBtn">Exporter</button>
+<label class="chip" for="importFile">Importer JSON <input id="importFile" type="file" accept="application/json" style="display:none"></label>
+<button class="btn btn-danger btn-sm" id="resetBtn">Tout réinitialiser</button>
 </div>
 </div>
-</header>
-
-
-<main class="wrap" id="app">
-<section class="card head">
-<div class="row split">
-<div>
-<div class="muted">Date sélectionnée</div>
-<div id="dateLabel" class="name big"></div>
+<div class="scroll">
+<table id="history" class="table">
+<thead>
+<tr>
+<th>Date</th><th>Tâche</th><th>Prévu</th><th>Réalisé par</th><th>Rempl.</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
 </div>
-<div>
-<span class="pill"><span class="muted">Tour du jour :</span> <span id="owner" class="name"></span></span>
+<div class="footer">Données locales. Branche ta base plus tard via <code>api.save</code>/<code>api.load</code>.</div>
 </div>
 </div>
 </section>
+</main>
 
 
-<section class="grid">
-<div class="col-4">
-<div class="card">
-<div class="row between centerY">
-<h3 class="m0">Tâches du jour</h3>
-<span class="badge ok" id="catchupHint">Rattrapage: OK</span>
+<template id="taskRowTpl">
+<div class="task" data-task="">
+<div class="left">
+<div class="dot"></div>
+<div>
+<div class="strong task-title"></div>
+<small class="muted">Prévu : <span class="scheduled"></span></small>
 </div>
-<p class="muted m0">Par défaut, <span class="name" id="owner2"></span> fait toutes les tâches ci‑dessous (même rotation pour chaque tâche).</p>
-<div id="taskList" class="col mt8"></div>
 </div>
-</div>
-
-
-<div class="col-4">
-<div class="card">
-<h3 class="m0">Dettes de rattrapage</h3>
-<p class="muted mt-6">Quand un tour est remplacé, la personne remplacée gagne +1 en « À rattraper ».</p>
-<div class="row wrap" id="debtsRow"></div>
-<div class="row mt12">
-<select id="debtWho">
+<div class="flex">
+<label class="muted">Remplacé par</label>
+<select class="field who">
+<option value="">— Personne (fait par la personne prévue) —</option>
 <option value="Nathan">Nathan</option>
 <option value="Anna">Anna</option>
 <option value="Aaron">Aaron</option>
+<option value="Papa">Papa</option>
+<option value="Maman">Maman</option>
+<option value="Autre">Autre…</option>
 </select>
-<select id="debtDelta">
-<option value="-1">Utiliser 1 rattrapage (−1)</option>
-<option value="1">Ajouter manuellement (+1)</option>
-<option value="-2">Utiliser 2 (−2)</option>
-<option value="-3">Utiliser 3 (−3)</option>
-</select>
-<button class="success" id="applyDebt">Appliquer</button>
+<button class="btn btn-primary save">Enregistrer</button>
 </div>
+</div>
+</template>
+
+
+<script src="/app.js"></script>
+</body>
 </html>
