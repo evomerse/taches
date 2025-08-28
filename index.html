@@ -1,4 +1,56 @@
 <!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Répartition des tâches — Famille</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<header class="topbar">
+<div class="wrap row">
+<h1>Répartition des tâches — Nathan • Anna • Aaron</h1>
+<div class="spacer"></div>
+<div class="toolbar">
+<label for="start">Début du cycle</label>
+<input type="date" id="start" />
+<button class="ghost tiny" id="todayBtn">Aujourd'hui</button>
+<button class="ghost tiny" id="prevBtn">⟵ Jour précédent</button>
+<button class="ghost tiny" id="nextBtn">Jour suivant ⟶</button>
+</div>
+</div>
+</header>
+
+
+<main class="wrap" id="app">
+<section class="card head">
+<div class="row split">
+<div>
+<div class="muted">Date sélectionnée</div>
+<div id="dateLabel" class="name big"></div>
+</div>
+<div>
+<span class="pill"><span class="muted">Tour du jour :</span> <span id="owner" class="name"></span></span>
+</div>
+</div>
+</section>
+
+
+<section class="grid">
+<div class="col-4">
+<div class="card">
+<div class="row between centerY">
+<h3 class="m0">Tâches du jour</h3>
+<span class="badge ok" id="catchupHint">Rattrapage: OK</span>
+</div>
+<p class="muted m0">Par défaut, <span class="name" id="owner2"></span> fait toutes les tâches ci‑dessous (même rotation pour chaque tâche).</p>
+<div id="taskList" class="col mt8"></div>
+</div>
+</div>
+
+
+<div class="col-4">
+<div class="card">
 <h3 class="m0">Dettes de rattrapage</h3>
 <p class="muted mt-6">Quand un tour est remplacé, la personne remplacée gagne +1 en « À rattraper ».</p>
 <div class="row wrap" id="debtsRow"></div>
@@ -16,62 +68,4 @@
 </select>
 <button class="success" id="applyDebt">Appliquer</button>
 </div>
-</div>
-</div>
-
-
-<div class="col-4">
-<div class="card">
-<div class="row between centerY">
-<h3 class="m0">Historique</h3>
-<div class="row gap8">
-<button class="ghost tiny" id="exportBtn">Exporter</button>
-<label class="chip" for="importFile">Importer JSON <input id="importFile" type="file" accept="application/json" style="display:none"></label>
-<button class="danger tiny" id="resetBtn">Tout réinitialiser</button>
-</div>
-</div>
-<div class="scroll">
-<table id="history">
-<thead>
-<tr>
-<th>Date</th><th>Tâche</th><th>Prévu</th><th>Réalisé par</th><th>Remplacement</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</div>
-<div class="footer">Données locales (localStorage). Branche une base plus tard via `api.save`/`api.load`.</div>
-</div>
-</div>
-</section>
-</main>
-
-
-<template id="taskRowTpl">
-<div class="task" data-task="">
-<div class="left">
-<div>
-<div class="name task-title"></div>
-<small>Prévu : <span class="scheduled"></span></small>
-</div>
-</div>
-<div class="flex">
-<label class="muted">Remplacé par</label>
-<select class="who">
-<option value="">— Personne (fait par la personne prévue) —</option>
-<option value="Nathan">Nathan</option>
-<option value="Anna">Anna</option>
-<option value="Aaron">Aaron</option>
-<option value="Papa">Papa</option>
-<option value="Maman">Maman</option>
-<option value="Autre">Autre…</option>
-</select>
-<button class="primary save">Enregistrer</button>
-</div>
-</div>
-</template>
-
-
-<script src="/app.js"></script>
-</body>
 </html>
