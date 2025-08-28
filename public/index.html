@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<div class="row gap8">
-<button class="btn btn-ghost btn-sm" id="exportBtn">Exporter</button>
 <label class="chip" for="importFile">Importer JSON <input id="importFile" type="file" accept="application/json" style="display:none"></label>
 <button class="btn btn-danger btn-sm" id="resetBtn">Tout réinitialiser</button>
 </div>
@@ -25,15 +23,15 @@
 <template id="taskRowTpl">
 <div class="task" data-task="">
 <div class="left">
-<div class="dot"></div>
+<div class="dot" aria-hidden="true"></div>
 <div>
 <div class="strong task-title"></div>
 <small class="muted">Prévu : <span class="scheduled"></span></small>
 </div>
 </div>
 <div class="flex">
-<label class="muted">Remplacé par</label>
-<select class="field who">
+<label class="muted" for="who-select">Remplacé par</label>
+<select class="field who" id="who-select">
 <option value="">— Personne (fait par la personne prévue) —</option>
 <option value="Nathan">Nathan</option>
 <option value="Anna">Anna</option>
@@ -48,6 +46,6 @@
 </template>
 
 
-<script src="/app.js"></script>
+<script src="../scripts/app.js" defer></script>
 </body>
 </html>
