@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<select id="debtWho" class="field">
+<option value="Nathan">Nathan</option>
+<option value="Anna">Anna</option>
+<option value="Aaron">Aaron</option>
+</select>
+<label class="sr-only" for="debtDelta">Action</label>
+<select id="debtDelta" class="field">
+<option value="-1">Utiliser 1 rattrapage (−1)</option>
+<option value="1">Ajouter manuellement (+1)</option>
+<option value="-2">Utiliser 2 (−2)</option>
+<option value="-3">Utiliser 3 (−3)</option>
+</select>
+<button class="btn success" id="applyDebt">Appliquer</button>
+</div>
+</div>
+</div>
+
+
+<!-- Col 3: Historique -->
+<div class="col-4">
+<div class="card">
+<div class="row between centerY">
+<h2 class="m0">Historique</h2>
+<div class="row gap8">
+<button class="btn ghost sm" id="exportBtn">Exporter</button>
+<label class="chip" for="importFile">Importer JSON <input id="importFile" type="file" accept="application/json" style="display:none"></label>
+<button class="btn danger sm" id="resetBtn">Réinitialiser</button>
+</div>
+</div>
+<div class="scroll">
+<table id="history" class="table">
+<thead>
+<tr>
+<th>Date</th><th>Tâche</th><th>Prévu</th><th>Réalisé par</th><th>Rempl.</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+<div class="footer">Données locales. Branche une base ensuite via <code>api.save</code>/<code>api.load</code>.</div>
+</div>
+</div>
+</section>
+</main>
+
+
+<template id="taskRowTpl">
+<div class="task" data-task="">
+<div class="left">
+<div class="dot" aria-hidden="true"></div>
+<div>
+<div class="strong task-title"></div>
+<small class="muted">Prévu : <span class="scheduled"></span></small>
+</div>
+</div>
+<div class="flex">
+<label class="muted">Remplacé par</label>
+<select class="field who">
+<option value="">— Personne (fait par la personne prévue) —</option>
+<option value="Nathan">Nathan</option>
+<option value="Anna">Anna</option>
+<option value="Aaron">Aaron</option>
+<option value="Papa">Papa</option>
+<option value="Maman">Maman</option>
+<option value="Autre">Autre…</option>
+</select>
+<button class="btn primary save">Enregistrer</button>
+</div>
+</div>
+</template>
+
+
+<script src="scripts/app.js" defer></script>
+</body>
+</html>
