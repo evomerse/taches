@@ -56,12 +56,13 @@ export const useSupabaseChores = () => {
         isPrimary: m.is_primary
       })));
 
-      setChoreTasks(tasks.map(t => ({
-        id: t.id,
-        name: t.name,
-        description: t.description,
-        icon: t.icon
-      })));
+        setChoreTasks(tasks.map(t => ({
+          id: t.id,
+          name: t.name,
+          description: t.description,
+          icon: t.icon,
+          dailyFrequency: t.daily_frequency || 1
+        })));
 
       setAssignments(assignmentsData.map(a => ({
         id: a.id,
@@ -89,67 +90,75 @@ export const useSupabaseChores = () => {
     }
   };
 
-  const getNextAssignee = async (taskId: string): Promise<string> => {
-    const primaryMembers = familyMembers.filter(m => m.isPrimary);
-    
-    const { data: lastAssignment } = await supabase
-      .from('task_assignments')
-      .select('*')
-      .eq('task_id', taskId)
-      .order('date', { ascending: false })
-      .limit(1)
-      .single();
+    const getNextAssignee = async (taskId: string, lastAssignedId?: string): Promise<string> => {
+      const primaryMembers = familyMembers.filter(m => m.isPrimary);
 
-    if (!lastAssignment) {
-      return primaryMembers[0]?.id || 'nathan';
-    }
-
-    const currentIndex = primaryMembers.findIndex(m => m.id === lastAssignment.assigned_to);
-    const nextIndex = (currentIndex + 1) % primaryMembers.length;
-    return primaryMembers[nextIndex]?.id || 'nathan';
-  };
-
-  const generateTodayAssignments = async () => {
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Vérifier si les assignations d'aujourd'hui existent déjà
-    const { data: existingAssignments } = await supabase
-      .from('task_assignments')
-      .select('*')
-      .eq('date', today);
-
-    if (existingAssignments && existingAssignments.length > 0) {
-      return;
-    }
-
-    // Générer de nouvelles assignations
-    const newAssignments = [];
-    for (const task of choreTasks) {
-      const assignee = await getNextAssignee(task.id);
-      const assignment = {
-        id: `${task.id}-${today}`,
-        task_id: task.id,
-        assigned_to: assignee,
-        date: today,
-        completed: false,
-        was_reassigned: false
-      };
-      newAssignments.push(assignment);
-    }
-
-    if (newAssignments.length > 0) {
-      const { error } = await supabase
-        .from('task_assignments')
-        .insert(newAssignments, { onConflict: 'id', ignoreDuplicates: true });
-
-      if (error) {
-        setError(error.message);
-      } else {
-        // Recharger les données
-        loadInitialData();
+      if (lastAssignedId) {
+        const currentIndex = primaryMembers.findIndex(m => m.id === lastAssignedId);
+        const nextIndex = (currentIndex + 1) % primaryMembers.length;
+        return primaryMembers[nextIndex]?.id || 'nathan';
       }
-    }
-  };
+
+      const { data: lastAssignment } = await supabase
+        .from('task_assignments')
+        .select('*')
+        .eq('task_id', taskId)
+        .order('date', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!lastAssignment) {
+        return primaryMembers[0]?.id || 'nathan';
+      }
+
+      const currentIndex = primaryMembers.findIndex(m => m.id === lastAssignment.assigned_to);
+      const nextIndex = (currentIndex + 1) % primaryMembers.length;
+      return primaryMembers[nextIndex]?.id || 'nathan';
+    };
+
+    const generateTodayAssignments = async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const newAssignments = [];
+
+      for (const task of choreTasks) {
+        const frequency = task.dailyFrequency || 1;
+
+        const { data: existing } = await supabase
+          .from('task_assignments')
+          .select('*')
+          .eq('task_id', task.id)
+          .order('date', { ascending: false });
+
+        const hasIncomplete = existing?.some(a => !a.completed);
+        if (hasIncomplete && frequency === 1) continue;
+
+        let lastAssignee = existing && existing[0] ? existing[0].assigned_to : undefined;
+        const todayCount = existing?.filter(a => a.date === today).length || 0;
+
+        for (let i = todayCount; i < frequency; i++) {
+          const assignee = await getNextAssignee(task.id, lastAssignee);
+          const assignment = {
+            id: frequency > 1 ? `${task.id}-${i + 1}-${today}` : `${task.id}-${today}`,
+            task_id: task.id,
+            assigned_to: assignee,
+            date: today,
+            completed: false,
+            was_reassigned: false
+          };
+          newAssignments.push(assignment);
+          lastAssignee = assignee;
+        }
+      }
+
+      if (newAssignments.length > 0) {
+        const { error } = await supabase
+          .from('task_assignments')
+          .insert(newAssignments, { onConflict: 'id', ignoreDuplicates: true });
+
+        if (error) setError(error.message);
+        else loadInitialData();
+      }
+    };
 
   const completeTask = async (assignmentId: string, completedBy?: string) => {
     try {
@@ -260,10 +269,12 @@ export const useSupabaseChores = () => {
     }
   };
 
-  const getTodayAssignments = () => {
-    const today = new Date().toISOString().split('T')[0];
-    return assignments.filter(a => a.date === today);
-  };
+    const getTodayAssignments = () => {
+      const today = new Date().toISOString().split('T')[0];
+      return assignments.filter(a =>
+        a.date === today || (!a.completed && new Date(a.date) < new Date(today))
+      );
+    };
 
   const getRecentHistory = () => {
     // Retourner tout l'historique, trié par date décroissante

@@ -28,16 +28,17 @@ async function seed() {
     throw membersError;
   }
 
-  const { error: tasksError } = await supabase
-    .from('chore_tasks')
-    .insert(
-      choreTasks.map(({ id, name, description, icon }) => ({
-        id,
-        name,
-        description,
-        icon,
-      })),
-    );
+    const { error: tasksError } = await supabase
+      .from('chore_tasks')
+      .insert(
+        choreTasks.map(({ id, name, description, icon, dailyFrequency }) => ({
+          id,
+          name,
+          description,
+          icon,
+          daily_frequency: dailyFrequency || 1,
+        })),
+      );
 
   if (tasksError) {
     throw tasksError;

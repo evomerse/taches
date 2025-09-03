@@ -20,7 +20,8 @@ function App() {
     completeTask,
     reassignTask,
     getTodayAssignments,
-    getRecentHistory
+    getRecentHistory,
+    refreshData
   } = useSupabaseChores();
 
   // Generate today's assignments on load
@@ -84,10 +85,10 @@ function App() {
             
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Tâches d'aujourd'hui</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {todayAssignments.map(assignment => {
-                  const task = choreTasks.find(t => t.id === assignment.taskId);
-                  if (!task) return null;
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-visible">
+                  {todayAssignments.map(assignment => {
+                    const task = choreTasks.find(t => t.id === assignment.taskId);
+                    if (!task) return null;
                   
                   return (
                     <TaskCard
@@ -106,13 +107,14 @@ function App() {
         );
 
       case 'history':
-        return (
-          <TaskHistory
-            history={recentHistory}
-            tasks={choreTasks}
-            familyMembers={familyMembers}
-          />
-        );
+          return (
+            <TaskHistory
+              history={recentHistory}
+              tasks={choreTasks}
+              familyMembers={familyMembers}
+              refreshData={refreshData}
+            />
+          );
 
       case 'balance':
         return (

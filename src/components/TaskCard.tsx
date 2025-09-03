@@ -45,15 +45,28 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     setShowCompleteMenu(false);
   };
 
-  const handleReassign = (newAssignee: string) => {
-    onReassign(assignment.id, newAssignee);
-    setShowReassignMenu(false);
-  };
+    const handleReassign = (newAssignee: string) => {
+      onReassign(assignment.id, newAssignee);
+      setShowReassignMenu(false);
+    };
 
-  return (
-    <div className={`relative bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-lg ${
-      assignment.completed ? 'bg-green-50 border-l-4 border-green-500' : 'hover:scale-105'
-    }`}>
+    const isOverdue =
+      !assignment.completed &&
+      new Date(assignment.date) < new Date(new Date().toISOString().split('T')[0]);
+
+    return (
+      <div
+        className={`relative z-10 bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-lg ${
+          assignment.completed
+            ? 'bg-green-50 border-l-4 border-green-500'
+            : isOverdue
+              ? 'bg-yellow-50 border-l-4 border-yellow-500'
+              : 'hover:scale-105'
+        }`}
+      >
+        {isOverdue && !assignment.completed && (
+          <span className="absolute top-2 right-2 text-xs text-yellow-700">En retard</span>
+        )}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           <span className="text-2xl">{getTaskIcon(task.icon)}</span>
