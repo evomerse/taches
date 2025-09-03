@@ -1,6 +1,7 @@
 import { FamilyMember, ChoreTask } from '../types';
 
 export const familyMembers: FamilyMember[] = [
+  { id: 'none', name: 'Personne', isPrimary: false },
   { id: 'nathan', name: 'Nathan', isPrimary: true },
   { id: 'anna', name: 'Anna', isPrimary: true },
   { id: 'aaron', name: 'Aaron', isPrimary: true },
@@ -13,8 +14,7 @@ export const choreTasks: ChoreTask[] = [
     id: 'feed-dogs',
     name: 'Nourrir les chiens',
     description: 'Donner à manger aux chiens',
-    icon: 'dog',
-    frequency: 2
+    icon: 'dog'
   },
   {
     id: 'clean-rabbit-cage',

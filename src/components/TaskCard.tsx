@@ -133,7 +133,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                         onClick={() => handleComplete(member.id)}
                         className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
                       >
-                        Par {member.name} (aide)
+                        {member.id === 'none'
+                          ? member.name
+                          : `Par ${member.name} (aide)`}
                       </button>
                     ))}
                 </div>
