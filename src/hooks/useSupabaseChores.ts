@@ -70,6 +70,7 @@ export const useSupabaseChores = () => {
         date: a.date,
         completed: a.completed,
         completedBy: a.completed_by || undefined,
+        completedByEmail: a.completed_by_email || undefined,
         completedAt: a.completed_at || undefined,
         wasReassigned: a.was_reassigned
       })));
@@ -152,6 +153,13 @@ export const useSupabaseChores = () => {
 
   const completeTask = async (assignmentId: string, completedBy?: string) => {
     try {
+      // Récupérer l'email de l'utilisateur connecté
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setError('Utilisateur non connecté');
+        return;
+      }
+
       const assignment = assignments.find(a => a.id === assignmentId);
       if (!assignment) return;
 
@@ -163,6 +171,7 @@ export const useSupabaseChores = () => {
         .update({
           completed: true,
           completed_by: completedBy || assignment.assignedTo,
+          completed_by_email: user.email,
           completed_at: new Date().toISOString(),
           was_reassigned: wasHelped || assignment.wasReassigned
         })

@@ -92,7 +92,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               </button>
               
               {showReassignMenu && (
-                <div className="absolute right-0 top-12 bg-white border rounded-lg shadow-lg py-1 z-10 min-w-32">
+                <div className="absolute right-0 top-12 bg-white border rounded-lg shadow-lg py-1 z-50 min-w-32">
                   {familyMembers
                     .filter(m => m.id !== assignment.assignedTo)
                     .map(member => (
@@ -118,7 +118,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               </button>
 
               {showCompleteMenu && (
-                <div className="absolute right-0 top-12 bg-white border rounded-lg shadow-lg py-1 z-10 min-w-40">
+                <div className="absolute right-0 top-12 bg-white border rounded-lg shadow-lg py-1 z-50 min-w-40">
                   <button
                     onClick={() => handleComplete()}
                     className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"

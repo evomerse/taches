@@ -18,6 +18,7 @@ export interface TaskAssignment {
   date: string;
   completed: boolean;
   completedBy?: string;
+  completedByEmail?: string;
   completedAt?: string;
   wasReassigned: boolean;
 }

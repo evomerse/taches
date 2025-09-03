@@ -53,35 +53,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
             className={`h-2 rounded-full transition-all duration-500 ${
               completionRate === 100 ? 'bg-green-500' : 'bg-blue-500'
             }`}
-            style={{ width: `${completionRate}%` }}
-          />
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="p-2 bg-green-100 rounded-lg">
-            <TrendingUp className="w-6 h-6 text-green-600" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">Champion du jour</h3>
-            <p className="text-sm text-gray-600">Aide la famille</p>
-          </div>
-        </div>
-        {topHelper ? (
-          <div>
-            <span className="text-xl font-bold text-green-600">
-              {getMemberName(topHelper.memberId)}
-            </span>
-            <div className="text-sm text-gray-600">
-              Balance: +{topHelper.netBalance}
-            </div>
-          </div>
-        ) : (
-          <span className="text-gray-500">Aucun pour le moment</span>
-        )}
-      </div>
-
       <div className="bg-white rounded-xl shadow-md p-6">
         <div className="flex items-center space-x-3 mb-4">
           <div className="p-2 bg-purple-100 rounded-lg">

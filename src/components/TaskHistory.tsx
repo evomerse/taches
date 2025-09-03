@@ -77,6 +77,11 @@ export const TaskHistory: React.FC<TaskHistoryProps> = ({
                             <span>à {formatTime(assignment.completedAt)}</span>
                           )}
                         </div>
+                        {assignment.completed && assignment.completedByEmail && (
+                          <span className="text-xs text-blue-600">
+                            Validé par: {assignment.completedByEmail}
+                          </span>
+                        )}
                       </div>
                     </div>
 
