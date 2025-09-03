@@ -13,7 +13,8 @@ export const choreTasks: ChoreTask[] = [
     id: 'feed-dogs',
     name: 'Nourrir les chiens',
     description: 'Donner à manger aux chiens',
-    icon: 'dog'
+    icon: 'dog',
+    frequency: 2
   },
   {
     id: 'clean-rabbit-cage',

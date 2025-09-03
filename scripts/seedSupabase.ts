@@ -31,11 +31,12 @@ async function seed() {
   const { error: tasksError } = await supabase
     .from('chore_tasks')
     .insert(
-      choreTasks.map(({ id, name, description, icon }) => ({
+      choreTasks.map(({ id, name, description, icon, frequency }) => ({
         id,
         name,
         description,
         icon,
+        daily_frequency: frequency ?? 1,
       })),
     );
 
