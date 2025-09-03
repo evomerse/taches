@@ -1,20 +1,58 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Clock, User, Award } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { TaskAssignment, ChoreTask, FamilyMember } from '../types';
 
 interface TaskHistoryProps {
   history: TaskAssignment[];
   tasks: ChoreTask[];
   familyMembers: FamilyMember[];
+  refreshData: () => Promise<void>;
 }
 
 export const TaskHistory: React.FC<TaskHistoryProps> = ({
   history,
   tasks,
-  familyMembers
+  familyMembers,
+  refreshData
 }) => {
   const getMemberName = (id: string) => familyMembers.find(m => m.id === id)?.name || '';
   const getTaskName = (id: string) => tasks.find(t => t.id === id)?.name || '';
+
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserEmail(user?.email ?? null);
+    });
+  }, []);
+
+  const isAuthorized = userEmail === import.meta.env.VITE_ADMIN_EMAIL;
+
+  const handleClearHistory = async () => {
+    const code = window.prompt("Entrez le code secret pour effacer l'historique");
+    if (!code) return;
+
+    const { data: setting } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'clear_history_code')
+      .single();
+    const expectedCode = (setting as { value?: string } | null)?.value || import.meta.env.VITE_CLEAR_HISTORY_CODE;
+
+    if (code !== expectedCode) {
+      window.alert('Code invalide');
+      return;
+    }
+
+    const { error } = await supabase.from('task_assignments').delete().neq('id', '');
+    if (error) {
+      window.alert("Erreur lors de l'effacement de l'historique");
+      return;
+    }
+
+    await refreshData();
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -34,11 +72,19 @@ export const TaskHistory: React.FC<TaskHistoryProps> = ({
 
   return (
     <div className="bg-white rounded-xl shadow-md">
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Clock className="w-6 h-6 text-gray-600" />
           <h2 className="text-xl font-semibold text-gray-900">Historique des tâches</h2>
         </div>
+        {isAuthorized && (
+          <button
+            onClick={handleClearHistory}
+            className="text-sm text-red-600 hover:text-red-800"
+          >
+            Effacer l'historique
+          </button>
+        )}
       </div>
       
       <div className="p-6">

@@ -20,7 +20,8 @@ function App() {
     completeTask,
     reassignTask,
     getTodayAssignments,
-    getRecentHistory
+    getRecentHistory,
+    refreshData
   } = useSupabaseChores();
 
   // Generate today's assignments on load
@@ -28,7 +29,7 @@ function App() {
     if (familyMembers.length > 0 && choreTasks.length > 0) {
       generateTodayAssignments();
     }
-  }, [familyMembers, choreTasks]);
+  }, [familyMembers, choreTasks, generateTodayAssignments]);
 
   const todayAssignments = getTodayAssignments();
   const recentHistory = getRecentHistory();
@@ -111,6 +112,7 @@ function App() {
             history={recentHistory}
             tasks={choreTasks}
             familyMembers={familyMembers}
+            refreshData={refreshData}
           />
         );
 
