@@ -78,6 +78,8 @@ function App() {
               todayAssignments={todayAssignments}
               balanceCounters={balanceCounters}
               familyMembers={familyMembers}
+              choreTasks={choreTasks}
+              assignments={assignments}
             />
             
             <div>
