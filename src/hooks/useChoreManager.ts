@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TaskAssignment, BalanceCounter, ChoreTask, FamilyMember } from '../types';
+import { TaskAssignment, BalanceCounter } from '../types';
 import { familyMembers, choreTasks } from '../data/initialData';
 
 export const useChoreManager = () => {

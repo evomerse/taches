@@ -259,12 +259,12 @@ export const useSupabaseChores = () => {
     return assignments.filter(a => a.date === today);
   };
 
-  const getRecentHistory = (days: number = 7) => {
+  const getRecentHistory = () => {
     // Retourner tout l'historique, trié par date décroissante
     return assignments.sort((a, b) => {
       const dateCompare = new Date(b.date).getTime() - new Date(a.date).getTime();
       if (dateCompare !== 0) return dateCompare;
-      
+
       // Si même date, trier par heure de completion (les terminées en premier)
       if (a.completedAt && b.completedAt) {
         return new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();

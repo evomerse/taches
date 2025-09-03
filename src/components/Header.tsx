@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Calendar } from 'lucide-react';
+import { Home } from 'lucide-react';
 
 interface HeaderProps {
   currentView: 'today' | 'history' | 'balance';
