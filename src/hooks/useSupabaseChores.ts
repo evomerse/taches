@@ -139,7 +139,7 @@ export const useSupabaseChores = () => {
     if (newAssignments.length > 0) {
       const { error } = await supabase
         .from('task_assignments')
-        .insert(newAssignments);
+        .insert(newAssignments, { onConflict: 'id', ignoreDuplicates: true });
 
       if (error) {
         setError(error.message);
