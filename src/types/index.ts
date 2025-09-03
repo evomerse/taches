@@ -9,6 +9,7 @@ export interface ChoreTask {
   name: string;
   description: string;
   icon: string;
+  dailyFrequency?: number;
 }
 
 export interface TaskAssignment {
@@ -43,6 +44,7 @@ export type SupabaseChoreTask = {
   name: string;
   description: string;
   icon: string;
+  daily_frequency: number;
   created_at: string;
 };
 

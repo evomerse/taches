@@ -1,17 +1,20 @@
 import React from 'react';
 import { Clock, User, Award } from 'lucide-react';
 import { TaskAssignment, ChoreTask, FamilyMember } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface TaskHistoryProps {
   history: TaskAssignment[];
   tasks: ChoreTask[];
   familyMembers: FamilyMember[];
+  refreshData: () => void;
 }
 
 export const TaskHistory: React.FC<TaskHistoryProps> = ({
   history,
   tasks,
-  familyMembers
+  familyMembers,
+  refreshData
 }) => {
   const getMemberName = (id: string) => familyMembers.find(m => m.id === id)?.name || '';
   const getTaskName = (id: string) => tasks.find(t => t.id === id)?.name || '';
@@ -32,13 +35,42 @@ export const TaskHistory: React.FC<TaskHistoryProps> = ({
     });
   };
 
+  const handleClearHistory = async () => {
+    const code = prompt("Entrez le code secret pour effacer l'historique");
+    if (!code) return;
+
+    const { data: storedCode } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'history_delete_code')
+      .single();
+
+    if (!storedCode || code !== storedCode.value) {
+      alert('Code incorrect');
+      return;
+    }
+
+    const { error } = await supabase.from('task_assignments').delete().neq('id', '');
+    if (error) {
+      alert('Erreur lors de la suppression: ' + error.message);
+    } else {
+      refreshData();
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-md">
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Clock className="w-6 h-6 text-gray-600" />
           <h2 className="text-xl font-semibold text-gray-900">Historique des tâches</h2>
         </div>
+        <button
+          onClick={handleClearHistory}
+          className="text-sm text-red-600 hover:text-red-700"
+        >
+          Effacer l'historique
+        </button>
       </div>
       
       <div className="p-6">
