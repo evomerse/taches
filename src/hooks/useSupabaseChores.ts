@@ -60,7 +60,8 @@ export const useSupabaseChores = () => {
         id: t.id,
         name: t.name,
         description: t.description,
-        icon: t.icon
+        icon: t.icon,
+        frequency: t.daily_frequency || 1
       })));
 
       setAssignments(assignmentsData.map(a => ({
@@ -89,9 +90,15 @@ export const useSupabaseChores = () => {
     }
   };
 
-  const getNextAssignee = async (taskId: string): Promise<string> => {
+  const getNextAssignee = async (taskId: string, lastAssigned?: string): Promise<string> => {
     const primaryMembers = familyMembers.filter(m => m.isPrimary);
-    
+
+    if (lastAssigned) {
+      const currentIndex = primaryMembers.findIndex(m => m.id === lastAssigned);
+      const nextIndex = (currentIndex + 1) % primaryMembers.length;
+      return primaryMembers[nextIndex]?.id || 'nathan';
+    }
+
     const { data: lastAssignment } = await supabase
       .from('task_assignments')
       .select('*')
@@ -125,16 +132,23 @@ export const useSupabaseChores = () => {
     // Générer de nouvelles assignations
     const newAssignments = [];
     for (const task of choreTasks) {
-      const assignee = await getNextAssignee(task.id);
-      const assignment = {
-        id: `${task.id}-${today}`,
-        task_id: task.id,
-        assigned_to: assignee,
-        date: today,
-        completed: false,
-        was_reassigned: false
-      };
-      newAssignments.push(assignment);
+      const frequency = task.frequency || 1;
+      let lastAssignee: string | undefined;
+
+      for (let i = 1; i <= frequency; i++) {
+        const assignee = await getNextAssignee(task.id, lastAssignee);
+        lastAssignee = assignee;
+        const idSuffix = frequency > 1 ? `${i}-${today}` : today;
+        const assignment = {
+          id: `${task.id}-${idSuffix}`,
+          task_id: task.id,
+          assigned_to: assignee,
+          date: today,
+          completed: false,
+          was_reassigned: false
+        };
+        newAssignments.push(assignment);
+      }
     }
 
     if (newAssignments.length > 0) {
