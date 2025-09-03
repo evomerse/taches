@@ -79,11 +79,15 @@ export const useChoreManager = () => {
   const completeTask = (assignmentId: string, completedBy?: string) => {
     setAssignments(prev => prev.map(assignment => {
       if (assignment.id === assignmentId) {
-        const wasHelped = completedBy && completedBy !== assignment.assignedTo;
-        
-        if (wasHelped) {
+        const wasHelped =
+          completedBy &&
+          completedBy !== assignment.assignedTo &&
+          completedBy !== 'none';
+        const wasMissed = completedBy === 'none';
+
+        if (wasHelped || wasMissed) {
           // Update balance counters
-          updateBalanceCounters(assignment.assignedTo, completedBy);
+          updateBalanceCounters(assignment.assignedTo, wasHelped ? completedBy : undefined);
         }
 
         return {
@@ -111,9 +115,9 @@ export const useChoreManager = () => {
     }));
   };
 
-  const updateBalanceCounters = (originalAssignee: string, helper: string) => {
+  const updateBalanceCounters = (originalAssignee: string, helper?: string) => {
     setBalanceCounters(prev => prev.map(counter => {
-      if (counter.memberId === helper) {
+      if (helper && helper !== 'none' && counter.memberId === helper) {
         const newHelpCount = counter.helpCount + 1;
         return {
           ...counter,

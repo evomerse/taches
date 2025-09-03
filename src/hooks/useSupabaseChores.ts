@@ -163,8 +163,12 @@ export const useSupabaseChores = () => {
       const assignment = assignments.find(a => a.id === assignmentId);
       if (!assignment) return;
 
-      const wasHelped = completedBy && completedBy !== assignment.assignedTo;
-      
+      const wasHelped =
+        completedBy &&
+        completedBy !== assignment.assignedTo &&
+        completedBy !== 'none';
+      const wasMissed = completedBy === 'none';
+
       // Mettre à jour l'assignation
       const { error: updateError } = await supabase
         .from('task_assignments')
@@ -179,9 +183,9 @@ export const useSupabaseChores = () => {
 
       if (updateError) throw updateError;
 
-      // Mettre à jour les compteurs si quelqu'un a aidé
-      if (wasHelped) {
-        await updateBalanceCounters(assignment.assignedTo, completedBy);
+      // Mettre à jour les compteurs si nécessaire
+      if (wasHelped || wasMissed) {
+        await updateBalanceCounters(assignment.assignedTo, wasHelped ? completedBy : undefined);
       }
 
       // Recharger les données
@@ -210,25 +214,27 @@ export const useSupabaseChores = () => {
     }
   };
 
-  const updateBalanceCounters = async (originalAssignee: string, helper: string) => {
+  const updateBalanceCounters = async (originalAssignee: string, helper?: string) => {
     try {
-      // Mettre à jour le compteur de l'aidant (+1 aide)
-      const { data: helperCounter } = await supabase
-        .from('balance_counters')
-        .select('*')
-        .eq('member_id', helper)
-        .single();
-
-      if (helperCounter) {
-        const newHelpCount = helperCounter.help_count + 1;
-        await supabase
+      // Mettre à jour le compteur de l'aidant (+1 aide) si applicable
+      if (helper && helper !== 'none') {
+        const { data: helperCounter } = await supabase
           .from('balance_counters')
-          .update({
-            help_count: newHelpCount,
-            net_balance: newHelpCount - helperCounter.missed_count,
-            updated_at: new Date().toISOString()
-          })
-          .eq('member_id', helper);
+          .select('*')
+          .eq('member_id', helper)
+          .single();
+
+        if (helperCounter) {
+          const newHelpCount = helperCounter.help_count + 1;
+          await supabase
+            .from('balance_counters')
+            .update({
+              help_count: newHelpCount,
+              net_balance: newHelpCount - helperCounter.missed_count,
+              updated_at: new Date().toISOString()
+            })
+            .eq('member_id', helper);
+        }
       }
 
       // Mettre à jour le compteur de la personne aidée (+1 manqué)
